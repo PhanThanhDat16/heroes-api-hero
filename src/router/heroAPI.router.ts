@@ -12,7 +12,7 @@ router.delete('/heroes/:id', requireAuth, heroController.deleteHeroes)
 router.delete('/users/:id/heroes', requireAuth, heroController.deleteHeroesMany)
 
 // 
-router.put('/users/:userId/heroes/tags', heroController.updateTagMultipleHeroes)
-router.delete('/users/:id/heroes/tags', heroController.deleteTagMultipleHeroes)
+// router.put('/users/:userId/heroes/tags', heroController.updateTagMultipleHeroes)
+// router.delete('/users/:id/heroes/tags', heroController.deleteTagMultipleHeroes)
 
 export const routerHero = router

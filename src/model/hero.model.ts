@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
+import { ITag } from '~/types/tag'
 
 const heroSchema = new Schema(
   {
@@ -8,7 +9,18 @@ const heroSchema = new Schema(
     mail: { type: String, require: true, unique: true },
     age: { type: Number, require: true },
     address: { type: String, require: true },
-    tags: { type: [String], require: true, default: [] }
+    tags: {
+      type: [
+        {
+          userId: { type: String },
+          name: { type: String },
+          backgroundColor: { type: String },
+          color: { type: String }
+        }
+      ],
+      require: true,
+      default: []
+    }
   },
   {
     versionKey: false,
@@ -28,5 +40,5 @@ export interface IHeroModel extends Document {
   age: number
   address: string
   userId: string
-  tags: string[]
+  tags: ITag[]
 }

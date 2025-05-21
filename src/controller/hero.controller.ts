@@ -2,9 +2,9 @@ import { Request, Response } from 'express'
 import { heroService } from '~/service/hero.service'
 
 import { categoryValidator } from '~/validator/hero.validator'
-import axios from 'axios'
 import { EHttpStatus } from '~/types/httpStatus'
 
+import axios from 'axios'
 const URL_USER = 'http://localhost:3001/internal'
 
 export const heroController = {
@@ -48,6 +48,11 @@ export const heroController = {
         })
         return
       }
+
+      // if (hero.tags.length > 0) {
+      //   const response = await axios.get(`${URL_USER}/tags`)
+      //   hero.tags = response.data
+      // }
 
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
@@ -146,73 +151,6 @@ export const heroController = {
 
       const result = await heroService.deleteMany(data)
       res.status(EHttpStatus.OK).json({ message: 'Deleted successfully' })
-    } catch (error) {
-      res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: `Internal server error: ${error}`
-      })
-    }
-  },
-
-  updateTagMultipleHeroes: async (req: Request, res: Response) => {
-    const userId = req.params.userId
-    const { tags, heroIds } = req.body
-    try {
-      try {
-        const respone = await axios.get(`${URL_USER}/users/${userId}`)
-        const user = respone.data
-      } catch (error) {
-        res.status(EHttpStatus.NOT_FOUND).json({
-          message: 'User not found'
-        })
-        return
-      }
-
-      const hero = await heroService.findManyHeroById(heroIds)
-      if (!hero) {
-        res.status(EHttpStatus.NOT_FOUND).json({
-          message: 'Hero not found'
-        })
-        return
-      }
-
-      const result = await heroService.updateTagByManyHeroes(heroIds, tags)
-      if (!result) {
-        res.status(EHttpStatus.BAD_REQUEST).json({ message: 'Tags already exist' })
-        return
-      }
-
-      res.status(EHttpStatus.OK).json({
-        message: 'Tags added successfully',
-        data: result
-      })
-    } catch (error) {
-      res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: `Internal server error: ${error}`
-      })
-    }
-  },
-
-  deleteTagMultipleHeroes: async (req: Request, res: Response) => {
-    const userId = req.params.id
-    const { tags, heroIds } = req.body
-
-    try {
-      try {
-        const respone = await axios.get(`${URL_USER}/users/${userId}`)
-        const user = respone.data
-      } catch (error) {
-        res.status(EHttpStatus.NOT_FOUND).json({
-          message: 'User not found'
-        })
-        return
-      }
-
-      const updatedHeroes = await heroService.deleteTagByManyHeroes(heroIds, tags)
-
-      res.status(EHttpStatus.OK).json({
-        message: 'Tags removed from heroes successfully',
-        data: updatedHeroes
-      })
     } catch (error) {
       res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
         message: `Internal server error: ${error}`

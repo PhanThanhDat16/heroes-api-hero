@@ -69,34 +69,35 @@ export const heroService = {
     return heroes
   },
 
-  updateTagByManyHeroes: async (heroIds: string[], tags: string[]) => {
-    // console.log(tags)
-    const heroes = await Hero.find({ _id: { $in: heroIds } })
-    const updatedHeroes = await Promise.all(
-      heroes.map(async (hero) => {
-        hero.tags = tags
-        await hero.save()
-        return hero
-      })
-    )
+  // updateTagByManyHeroes: async (heroIds: string[], tags: string[]) => {
+  //   // console.log(tags)
+  //   const heroes = await Hero.find({ _id: { $in: heroIds } })
+  //   const updatedHeroes = await Promise.all(
+  //     heroes.map(async (hero) => {
+  //       hero.tags = tags
+  //       await hero.save()
+  //       return hero
+  //     })
+  //   )
 
-    return updatedHeroes
-  },
+  //   return updatedHeroes
+  // },
 
-  deleteTagByManyHeroes: async (heroIds: string[], tags: string[]) => {
-    const heroes = await Hero.find({ _id: { $in: heroIds } })
-    const updatedHeroes = await Promise.all(
-      heroes.map(async (hero) => {
-        const hasAnyTag = tags.some((tag) => hero.tags.includes(tag))
-        if (hasAnyTag) {
-          hero.tags = hero.tags.filter((tag) => !tags.includes(tag))
-          await hero.save()
-          return hero
-        }
-        return null
-      })
-    )
+  // deleteTagByManyHeroes: async (heroIds: string[], tags: string[]) => {
+  //   const heroes = await Hero.find({ _id: { $in: heroIds } })
+  //   const updatedHeroes = await Promise.all(
+  //     heroes.map(async (hero) => {
+  //       const hasAnyTag = tags.some((tag) => hero.tags.includes(tag))
+  //       if (hasAnyTag) {
+  //         hero.tags = hero.tags.filter((tag) => !tags.includes(tag))
+  //         await hero.save()
+  //         return hero
+  //       }
+  //       return null
+  //     })
+  //   )
 
-    return updatedHeroes.filter(Boolean)
-  }
+  //   return updatedHeroes.filter(Boolean)
+  // }
+
 }
