@@ -10,14 +10,7 @@ const heroSchema = new Schema(
     age: { type: Number, require: true },
     address: { type: String, require: true },
     tags: {
-      type: [
-        {
-          userId: { type: String },
-          name: { type: String },
-          backgroundColor: { type: String },
-          color: { type: String }
-        }
-      ],
+      type: [String],
       require: true,
       default: []
     }

@@ -49,10 +49,17 @@ export const heroController = {
         return
       }
 
-      // if (hero.tags.length > 0) {
-      //   const response = await axios.get(`${URL_USER}/tags`)
-      //   hero.tags = response.data
-      // }
+      if (hero.tags.length > 0) {
+        try {
+          const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
+          hero.tags = response.data.data
+        } catch (error) {
+          res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
+            message: `Internal server error: ${error}`
+          })
+          return
+        }
+      }
 
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
@@ -69,6 +76,21 @@ export const heroController = {
     const userId = req.params.id
     try {
       const heroes = await heroService.getAllByUserId(userId)
+
+      for (const hero of heroes) {
+        if (hero.tags && hero.tags.length > 0) {
+          try {
+            const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
+            hero.tags = response.data.data
+          } catch (error) {
+            res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
+              message: `Internal server error: ${error}`
+            })
+            return
+          }
+        }
+      }
+
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
         data: heroes
@@ -83,6 +105,21 @@ export const heroController = {
   getHeroes: async (req: Request, res: Response) => {
     try {
       const heroes = await heroService.getAll()
+
+      for (const hero of heroes) {
+        if (hero.tags && hero.tags.length > 0) {
+          try {
+            const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
+            hero.tags = response.data.data
+          } catch (error) {
+            res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
+              message: `Internal server error: ${error}`
+            })
+            return
+          }
+        }
+      }
+
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
         data: heroes

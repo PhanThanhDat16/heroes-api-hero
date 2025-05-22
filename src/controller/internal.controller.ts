@@ -6,6 +6,7 @@ import { EHttpStatus } from "~/types/httpStatus"
 export const internalController = {
   updateTagMultipleHeroes: async (req: Request, res: Response) => {
     const { tags, heroIds } = req.body
+
     try {
       const hero = await heroService.findManyHeroById(heroIds)
       if (!hero) {
