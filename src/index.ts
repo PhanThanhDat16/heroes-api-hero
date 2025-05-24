@@ -19,7 +19,7 @@ app.use(express.urlencoded({extended: true}))
 
 app.use('/api', routerHero)
 
-app.use('/api/internal', routerInternal)
+app.use('/internal', routerInternal)
 
 
 app.listen(process.env.PORT, () => {
