@@ -5,7 +5,6 @@ import { categoryValidator } from '~/validator/hero.validator'
 import { EHttpStatus } from '~/types/httpStatus'
 
 import axios from 'axios'
-const URL_USER = 'http://localhost:3001/internal'
 
 export const heroController = {
   createHeroes: async (req: Request, res: Response) => {
@@ -51,7 +50,7 @@ export const heroController = {
 
       if (hero.tags.length > 0) {
         try {
-          const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
+          const response = await axios.post(`${process.env.URL_USER}/internal/tags`, { tags: hero.tags })
           hero.tags = response.data.data
         } catch (error) {
           res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -74,26 +73,40 @@ export const heroController = {
 
   getHeroesByUserId: async (req: Request, res: Response) => {
     const userId = req.params.id
+
     try {
       const heroes = await heroService.getAllByUserId(userId)
 
-      for (const hero of heroes) {
-        if (hero.tags && hero.tags.length > 0) {
+      const enhancedHeroes = await Promise.all(
+        heroes.map(async (hero) => {
           try {
-            const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
-            hero.tags = response.data.data
+            if (hero.tags && hero.tags.length > 0) {
+              const tagResponse = await axios.post(`${process.env.URL_USER}/internal/tags`, {
+                tags: hero.tags
+              })
+              hero.tags = tagResponse.data.data
+            }
+
+            const userResponse = await axios.get(`${process.env.URL_USER}/internal/users/${hero.userId}`)
+            const user = userResponse.data?.data
+
+            return {
+              ...hero,
+              userInfo: user
+            }
           } catch (error) {
-            res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
-              message: `Internal server error: ${error}`
-            })
-            return
+            console.error('Internal server error', error)
+            return {
+              ...hero,
+              userInfo: {}
+            }
           }
-        }
-      }
+        })
+      )
 
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
-        data: heroes
+        data: enhancedHeroes
       })
     } catch (error) {
       res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
@@ -106,23 +119,36 @@ export const heroController = {
     try {
       const heroes = await heroService.getAll()
 
-      for (const hero of heroes) {
-        if (hero.tags && hero.tags.length > 0) {
+      const enhancedHeroes = await Promise.all(
+        heroes.map(async (hero) => {
           try {
-            const response = await axios.post(`${URL_USER}/tags`, { tags: hero.tags })
-            hero.tags = response.data.data
+            if (hero.tags && hero.tags.length > 0) {
+              const tagResponse = await axios.post(`${process.env.URL_USER}/internal/tags`, {
+                tags: hero.tags
+              })
+              hero.tags = tagResponse.data.data
+            }
+
+            const userResponse = await axios.get(`${process.env.URL_USER}/internal/users/${hero.userId}`)
+            const user = userResponse.data?.data
+
+            return {
+              ...hero,
+              userInfo: user
+            }
           } catch (error) {
-            res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
-              message: `Internal server error: ${error}`
-            })
-            return
+            console.error('Internal server error', error)
+            return {
+              ...hero,
+              userInfo: {}
+            }
           }
-        }
-      }
+        })
+      )
 
       res.status(EHttpStatus.OK).json({
         message: 'successfully',
-        data: heroes
+        data: enhancedHeroes
       })
     } catch (error) {
       res.status(EHttpStatus.INTERNAL_SERVER_ERROR).json({
